@@ -5,7 +5,8 @@
 #include <cstdio>
 
 bool init();
-void exit();
+void close();
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 GLFWwindow *window;
 
@@ -21,10 +22,12 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 		glfwSwapBuffers(window);
 	}
 
-	exit();
+	close();
 	return returnCode;
 }
 
@@ -55,11 +58,20 @@ bool init()
 	}
 
 	glViewport(0, 0, 800, 600);
+	glfwSetKeyCallback(window, key_callback);
 
 	return true;
 }
 
-void exit()
+void close()
 {
 	glfwTerminate();
+}
+
+void key_callback(GLFWwindow * window, int key, int scancode, int action, int mode)
+{
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
 }
