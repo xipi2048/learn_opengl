@@ -13,6 +13,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 GLFWwindow* window = nullptr;
 GLuint VBO;
+GLuint vertexShader;
 
 GLfloat vertices[] = {
 	-0.5f, -0.5f, 0.0f,
@@ -82,6 +83,9 @@ bool init()
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	//Compile shaders
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
 	return true;
 }
