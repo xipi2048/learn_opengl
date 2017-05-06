@@ -43,9 +43,11 @@ const char* fragmentShaderSource = R"(
 
 out vec4 color;
 
+uniform vec4 ourColor;
+
 void main()
 {
-	color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	color = ourColor;
 }
 )";
 
@@ -199,11 +201,19 @@ void draw()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	//Set color based on time
+	auto timeValue = glfwGetTime();
+	auto greenValue = (sin(timeValue) / 2) + 0.5;
+	auto vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+
 	//Init
 	glUseProgram(shaderProgram);
-	glBindVertexArray(VAO);
 
-	//draw
+	//Set color
+	glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+	
+	//draw triangle
+	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	//Release
