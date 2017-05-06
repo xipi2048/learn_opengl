@@ -32,22 +32,24 @@ const char* vertexShaderSource = R"(
 
 layout (location = 0) in vec3 position;
 
+out vec4 vertexColor;
+
 void main()
 {
 	gl_Position = vec4(position.x, position.y, position.z, 1.0);
+
+	vertexColor = vec4(0.5f, 0.0f, 0.0f, 1.0f);
 }
 )";
 
 const char* fragmentShaderSource = R"(
 #version 330 core
-
+in vec4 vertexColor;
 out vec4 color;
-
-uniform vec4 ourColor;
 
 void main()
 {
-	color = ourColor;
+	color = vertexColor;
 }
 )";
 
@@ -201,19 +203,11 @@ void draw()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//Set color based on time
-	auto timeValue = glfwGetTime();
-	auto greenValue = (sin(timeValue) / 2) + 0.5;
-	auto vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-
 	//Init
 	glUseProgram(shaderProgram);
-
-	//Set color
-	glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-	
-	//draw triangle
 	glBindVertexArray(VAO);
+
+	//draw
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	//Release
