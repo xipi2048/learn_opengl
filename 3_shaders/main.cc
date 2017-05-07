@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cstdio>
 
+#include "shader.h"
+
 using std::cout;
 using std::endl;
 
@@ -17,9 +19,7 @@ void draw();
 GLFWwindow* window = nullptr;
 GLuint VAO; //vertex array object
 GLuint VBO; //vertex buffer object
-GLuint vertexShader;
-GLuint fragmentShader;
-GLuint shaderProgram;
+Shader shader;
 
 GLfloat vertices[] = {
 	-0.5f, -0.5f, 0.0f,
@@ -27,36 +27,13 @@ GLfloat vertices[] = {
 	0.0f,  0.5f, 0.0f
 };
 
-const char* vertexShaderSource = R"(
-#version 330 core
-
-layout (location = 0) in vec3 position;
-
-out vec4 vertexColor;
-
-void main()
-{
-	gl_Position = vec4(position.x, position.y, position.z, 1.0);
-
-	vertexColor = vec4(0.5f, 0.0f, 0.0f, 1.0f);
-}
-)";
-
-const char* fragmentShaderSource = R"(
-#version 330 core
-in vec4 vertexColor;
-out vec4 color;
-
-void main()
-{
-	color = vertexColor;
-}
-)";
-
 int main()
 {
 	if (!init())
 	{
+
+		
+
 		cout << "Press enter to exit" << endl;
 		getchar();
 	}
@@ -64,6 +41,10 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
+
+		auto vertexOffsetXPosition = glGetUniformLocation(shader.Program, "offsetX");
+		glUniform1f(vertexOffsetXPosition, 0.5f);
+
 		draw();
 	}
 
@@ -115,71 +96,9 @@ bool init()
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 
-	//Compile vertex shader
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	//Compile fragment shader
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	//Make sure both compiled
-	if (!(checkCompile(vertexShader, "vertex") && checkCompile(fragmentShader, "fragment")))
-	{
-		return false;
-	}
-
-	//Attach shaders to shader program
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	if (!checkLink(shaderProgram))
-	{
-		return false;
-	}
-
-	//Delete shaders
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	shader.InitShader("shader.vs", "shader.frag");
 
 	return true;
-}
-
-
-bool checkCompile(GLuint shader, const char* name)
-{
-	GLint success;
-	GLchar infoLog[512];
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-
-	if (!success)
-	{
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		cout << "Could not compile " << name << " shader" << endl
-			<< infoLog << endl;
-	}
-
-	return success;
-}
-
-bool checkLink(GLuint program)
-{
-	GLint success;
-	GLchar infoLog[512];
-	glGetShaderiv(program, GL_LINK_STATUS, &success);
-
-	if (!success)
-	{
-		glGetShaderInfoLog(program, 512, NULL, infoLog);
-		cout << "Could not link shaders to program" << endl
-			<< infoLog << endl;
-	}
-
-	return success;
 }
 
 void close()
@@ -204,7 +123,7 @@ void draw()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	//Init
-	glUseProgram(shaderProgram);
+	shader.Use();
 	glBindVertexArray(VAO);
 
 	//draw

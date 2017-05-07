@@ -14,7 +14,7 @@ public:
 	GLuint Program;
 
 	//Constructor reads and builds the sahder
-	Shader(const GLchar* vertexSourcePath, const GLchar* fragmentSourcePath);
+	void InitShader(const GLchar* vertexSourcePath, const GLchar* fragmentSourcePath);
 
 	//Use the program
 	void Use() {
@@ -22,7 +22,7 @@ public:
 	}
 };
 
-Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
+void Shader::InitShader(const GLchar* vertexPath, const GLchar* fragmentPath)
 {
 	string vertexCode;
 	string fragmentCode;
@@ -60,6 +60,8 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
 	GLint success;
 	GLchar infoLog[512];
 
+// ----------------------------------------------------------------------------
+
 	vertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex, 1, &vShaderCode, NULL);
 	glCompileShader(vertex);
@@ -72,8 +74,19 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
 		cout << "Error:Shader::Vertex::Compilation_Failed" << endl;
 	}
 
-	//todo: Write fragment shader stuff
-	//[...]
+	fragment = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragment, 1, &fShaderCode, NULL);
+	glCompileShader(fragment);
+
+	glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
+
+	if (!success)
+	{
+		glGetShaderInfoLog(vertex, 512, NULL, infoLog);
+		cout << "Error:Shader::Vertex::Compilation_Failed" << endl;
+	}
+
+// ----------------------------------------------------------------------------
 
 	this->Program = glCreateProgram();
 	glAttachShader(this->Program, vertex);
