@@ -5,6 +5,7 @@
 #include <cstdio>
 
 #include "shader.h"
+#include "SOIL.h"
 
 using std::cout;
 using std::endl;
@@ -19,36 +20,24 @@ void draw();
 GLFWwindow* window = nullptr;
 GLuint VAO; //vertex array object
 GLuint VBO; //vertex buffer object
+GLuint texture;
 Shader shader;
 
-GLfloat vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	0.0f,  0.5f, 0.0f
-};
+int imageWidth, imageHeight;
+unsigned char* image;
 
-GLfloat texCoords[] = {
-	0.0f, 0.0f, //lower left
-	1.0f, 0.0f, //lower-right
-	0.5f, 1.0f  //top-center corner
+GLfloat vertices[] = {
+	// Positions // Colors // Texture Coords
+	0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // Top Right
+	0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // Bottom Right
+	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom Left
+	-0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f // Top Left
 };
 
 int main()
 {
 	if (!init())
 	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-
-		float borderColor[] = { 1.0f, 1.0f, 1.0f };
-		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 		cout << "Press enter to exit" << endl;
 		getchar();
 	}
@@ -57,9 +46,6 @@ int main()
 	{
 		glfwPollEvents();
 
-		auto vertexOffsetXPosition = glGetUniformLocation(shader.Program, "offsetX");
-		glUniform1f(vertexOffsetXPosition, 0.5f);
-
 		draw();
 	}
 
@@ -67,8 +53,11 @@ int main()
 	return 0;
 }
 
+
 bool init()
 {
+	
+
 	//Init GLFW
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -113,6 +102,33 @@ bool init()
 
 	shader.InitShader("shader.vert", "shader.frag");
 
+	//Init texture
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+	float borderColor[] = { 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//Load texture
+	image = SOIL_load_image("container.jpg", &imageWidth, &imageHeight, 0, SOIL_LOAD_RGB);
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	SOIL_free_image_data(image);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//Apply texture
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+
 	return true;
 }
 
@@ -139,10 +155,11 @@ void draw()
 
 	//Init
 	shader.Use();
-	glBindVertexArray(VAO);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindVertexArray(VAO);	
 
 	//draw
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	//Release
 	glBindVertexArray(0);

@@ -29,6 +29,8 @@ void Shader::InitShader(const GLchar* vertexPath, const GLchar* fragmentPath)
 	ifstream vShaderFile;
 	ifstream fShaderFile;
 
+	
+
 	vShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
 	fShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
 
