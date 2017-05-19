@@ -50,7 +50,8 @@ void Shader::InitShader(const GLchar* vertexPath, const GLchar* fragmentPath)
 	}
 	catch (ifstream::failure e)
 	{
-		cout << "Error::Shader::File_not_successfully_read" << endl;
+		cout << "Error::Shader::File_not_successfully_read" << endl
+			<< e.what() << endl;
 	}
 
 	const GLchar* vShaderCode = vertexCode.c_str();
@@ -71,7 +72,8 @@ void Shader::InitShader(const GLchar* vertexPath, const GLchar* fragmentPath)
 	if (!success)
 	{
 		glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-		cout << "Error:Shader::Vertex::Compilation_Failed" << endl;
+		cout << "Error:Shader::Vertex::Compilation_Failed" << endl
+			<< infoLog << endl;
 	}
 
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -83,7 +85,8 @@ void Shader::InitShader(const GLchar* vertexPath, const GLchar* fragmentPath)
 	if (!success)
 	{
 		glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-		cout << "Error:Shader::Vertex::Compilation_Failed" << endl;
+		cout << "Error:Shader::Vertex::Compilation_Failed" << endl
+			<< infoLog << endl;
 	}
 
 	// ----------------------------------------------------------------------------
@@ -97,7 +100,8 @@ void Shader::InitShader(const GLchar* vertexPath, const GLchar* fragmentPath)
 	if (!success)
 	{
 		glGetProgramInfoLog(this->Program, 512, NULL, infoLog);
-		cout << "error::shader::program::linking_failed" << endl;
+		cout << "error::shader::program::linking_failed" << endl
+			<< infoLog << endl;
 	}
 
 	glDeleteShader(vertex);
