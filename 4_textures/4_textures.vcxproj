@@ -150,6 +150,9 @@
     <None Include="textures.vs" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="awesomeface.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <Image Include="container.jpg">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
