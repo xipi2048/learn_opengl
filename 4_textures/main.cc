@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstdio>
 
-#include "MyCode/shader.h"
+#include "MyCode\shader.h"
 #include "SOIL.h"
 
 // Function prototypes
