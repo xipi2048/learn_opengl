@@ -20,20 +20,18 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.vert">
+    <None Include="textures.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="shader.frag">
+    <None Include="textures.vs">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="wall.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="container.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
