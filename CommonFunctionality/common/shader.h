@@ -1,4 +1,6 @@
 #pragma once
+#define GLEW_STATIC
+#include <GL/glew.h>
 
 #include <string>
 #include <fstream>
@@ -6,14 +8,16 @@
 #include <iostream>
 using namespace std;
 
-#include <GL/glew.h>
-
 class Shader
 {
 public:
+	Shader(const GLchar* vertexSourcePath, const GLchar* fragmentSourcePath) {
+		InitShader(vertexSourcePath, fragmentSourcePath);
+	}
+
 	GLuint Program;
 
-	//Constructor reads and builds the sahder
+	//Constructor reads and builds the shader
 	void InitShader(const GLchar* vertexSourcePath, const GLchar* fragmentSourcePath);
 
 	//Use the program
@@ -50,8 +54,7 @@ void Shader::InitShader(const GLchar* vertexPath, const GLchar* fragmentPath)
 	}
 	catch (ifstream::failure e)
 	{
-		cout << "Error::Shader::File_not_successfully_read" << endl
-			<< e.what() << endl;
+		cout << "Error::Shader::File_not_successfully_read" << endl;
 	}
 
 	const GLchar* vShaderCode = vertexCode.c_str();
@@ -72,8 +75,7 @@ void Shader::InitShader(const GLchar* vertexPath, const GLchar* fragmentPath)
 	if (!success)
 	{
 		glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-		cout << "Error:Shader::Vertex::Compilation_Failed" << endl
-			<< infoLog << endl;
+		cout << "Error:Shader::Vertex::Compilation_Failed" << endl;
 	}
 
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -85,8 +87,7 @@ void Shader::InitShader(const GLchar* vertexPath, const GLchar* fragmentPath)
 	if (!success)
 	{
 		glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-		cout << "Error:Shader::Vertex::Compilation_Failed" << endl
-			<< infoLog << endl;
+		cout << "Error:Shader::Vertex::Compilation_Failed" << endl;
 	}
 
 	// ----------------------------------------------------------------------------
@@ -100,8 +101,7 @@ void Shader::InitShader(const GLchar* vertexPath, const GLchar* fragmentPath)
 	if (!success)
 	{
 		glGetProgramInfoLog(this->Program, 512, NULL, infoLog);
-		cout << "error::shader::program::linking_failed" << endl
-			<< infoLog << endl;
+		cout << "error::shader::program::linking_failed" << endl;
 	}
 
 	glDeleteShader(vertex);
