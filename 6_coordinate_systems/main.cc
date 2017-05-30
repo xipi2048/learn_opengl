@@ -94,6 +94,20 @@ int main()
 		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
 		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
+
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(2.0f, 5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f, 3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f, 2.0f, -2.5f),
+		glm::vec3(1.5f, 0.2f, -1.5f),
+		glm::vec3(-1.3f, 1.0f, -1.5f)
+	};
+
 	GLuint VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -183,19 +197,31 @@ int main()
 		// Activate shader
 		ourShader.Use();
 		
-		glm::mat4 model, view, projection;
+		glm::mat4 view, projection;
 		//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, (GLfloat)glfwGetTime() * 2.0f, glm::vec3(0.5f, 1.0f, 0.0f));
+		//model = glm::rotate(model, (GLfloat)glfwGetTime() * 2.0f, glm::vec3(0.5f, 1.0f, 0.0f));
 		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 		projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / HEIGHT, 0.1f, 100.0f);
 
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		// Draw container
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (int i = 0; i < sizeof(cubePositions) / sizeof(cubePositions[0]); ++i)
+		{
+			auto pos = cubePositions[i];
+			glm::mat4 model;
+			model = glm::translate(model, cubePositions[i]);
+			GLfloat angle = (i % 3 == 0 ? (GLfloat)glfwGetTime() * 50.0f : 20.0f * i);
+
+			//model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			model = glm::rotate(model, glm::radians(angle), i > 0 ? pos : glm::vec3(1.0f));
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}		
+		
 		glBindVertexArray(0);				
 
 		// Swap the screen buffers
